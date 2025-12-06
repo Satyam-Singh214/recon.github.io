@@ -4,29 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OneLinerRecon Advanced - Satyam and Kalyani</title>
+
+  <!-- Favicon logo in browser tab -->
   <link rel="icon" type="image/png" href="logo.png" />
+
+  <!-- Main stylesheet -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Navigation -->
- <header class="nav">
-  <div class="nav-logo">
-    <img src="logo.png" alt="Satyam & Kalyani" class="logo-img">
-    OneLinerRecon+
-  </div>
-  <nav class="nav-links">
-    <!-- links -->
-  </nav>
-</header>
+  <header class="nav">
+    <div class="nav-logo">
+      <img src="logo.png" alt="Satyam &amp; Kalyani" class="logo-img">
+      OneLinerRecon+
+    </div>
     <nav class="nav-links">
       <a href="#subdomain">Subdomains</a>
-      <a href="#asn">ASN & IP</a>
+      <a href="#asn">ASN &amp; IP</a>
       <a href="#live-hosts">Live Hosts</a>
       <a href="#urls">URLs</a>
       <a href="#vuln">Vulns</a>
       <a href="#sensitive">Sensitive Files</a>
       <a href="#hidden">Hidden Params</a>
-      <a href="#dir">Dirs & Files</a>
+      <a href="#dir">Dirs &amp; Files</a>
       <a href="#wp">WordPress</a>
       <a href="#cors">CORS</a>
       <a href="#dorks">Google Dorks</a>
@@ -38,7 +38,7 @@
     <div class="hero-inner">
       <p class="badge">Bug Bounty · Recon to Exploit</p>
       <p class="badge">By Kalyani and Satyam</p>
-      <h1>One‑Liner Recon & Exploit Toolkit</h1>
+      <h1>One‑Liner Recon &amp; Exploit Toolkit</h1>
       <p class="hero-text">
         All‑in‑one recon cheat‑sheet for subdomains, ASN, live hosts, URLs, vulnerabilities, sensitive files,
         directories, WordPress, CORS and advanced Google Dorks. Copy, paste, and hack responsibly.
@@ -53,380 +53,7 @@
     </div>
   </section>
 
-  <!-- Subdomain Enumeration -->
-  <section id="subdomain" class="section">
-    <div class="section-header">
-      <h2>Subdomain Enumeration</h2>
-      <p>Discover subdomains using passive and active techniques and detect takeover opportunities.</p>
-    </div>
-    <div class="grid">
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Passive Subdomains</h3>
-          <span class="chip">Subfinder</span>
-        </div>
-        <p>Collect subdomains using passive sources only.</p>
-        <pre><code>subfinder -d example.com -silent</code></pre>
-      </div>
+  <!-- (keep the rest of your sections exactly as before) -->
 
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Active (Permutation) Subdomains</h3>
-          <span class="chip">puredns</span>
-        </div>
-        <p>Bruteforce permutations using a large wordlist.</p>
-        <pre><code>puredns bruteforce -d example.com -w /wordlists/all.txt</code></pre>
-      </div>
-
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Subdomains &amp; Takeover Check</h3>
-          <span class="chip">subfinder + subjack</span>
-        </div>
-        <p>Find subdomains and check for potential takeovers.</p>
-        <pre><code>subfinder -d example.com | subjack -w fingerprint.txt -t 100</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- ASN & IP Discovery -->
-  <section id="asn" class="section alt">
-    <div class="section-header">
-      <h2>ASN &amp; IP Discovery</h2>
-      <p>Map organizational ownership and resolve domains to IPs.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>ASN &amp; IP Info (Whois)</h3>
-          <span class="chip">whois</span>
-        </div>
-        <p>Get ASN, CIDR and organization information.</p>
-        <pre><code>whois example.com | grep -E "CIDR|AS Name|OrgName"</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Resolve to IP</h3>
-          <span class="chip">resolveip</span>
-        </div>
-        <p>Resolve domain to IP address.</p>
-        <pre><code>echo example.com | resolveip</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Live Host Discovery -->
-  <section id="live-hosts" class="section">
-    <div class="section-header">
-      <h2>Live Host Discovery</h2>
-      <p>Identify live URLs and IPs to focus your attacks.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Probe for Live URLs</h3>
-          <span class="chip">httpx</span>
-        </div>
-        <p>Probe subdomains for live web services.</p>
-        <pre><code>cat subdomains.txt | httpx -silent -title -webserver</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Live IPs (Scan)</h3>
-          <span class="chip">nmap</span>
-        </div>
-        <p>Ping sweep over a list of IPs.</p>
-        <pre><code>nmap -sP -iL ip_list.txt</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- URL Collection & Analysis -->
-  <section id="urls" class="section alt">
-    <div class="section-header">
-      <h2>URL Collection &amp; Analysis</h2>
-      <p>Harvest historical URLs, parameterized endpoints and JS‑exposed paths.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>From Wayback Machine</h3>
-          <span class="chip">waybackurls</span>
-        </div>
-        <p>Grab archived URLs and filter non‑static assets.</p>
-        <pre><code>waybackurls example.com | grep -v "jpg\|png\|gif" | sort -u</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>URLs with Parameters</h3>
-          <span class="chip">grep</span>
-        </div>
-        <p>Extract URLs containing parameters for further testing.</p>
-        <pre><code>cat urls.txt | grep "=" | sort -u</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Endpoints from JS Files</h3>
-          <span class="chip">getallurls</span>
-        </div>
-        <p>Pull endpoints leaked inside JavaScript files.</p>
-        <pre><code>subfinder -d example.com | getallurls -js | sort -u</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Vulnerability Scanning -->
-  <section id="vuln" class="section">
-    <div class="section-header">
-      <h2>Vulnerability Scanning</h2>
-      <p>Quick, low‑noise vulnerability checks for common issues.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Low‑Severity Scan</h3>
-          <span class="chip">nuclei</span>
-        </div>
-        <p>Run nuclei templates for default logins and misconfigurations.</p>
-        <pre><code>nuclei -l urls.txt -t default-logins.yaml</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>LFI Payload Fuzzing</h3>
-          <span class="chip">ffuf</span>
-        </div>
-        <p>Fuzz file inclusion parameters using LFI payload list.</p>
-        <pre><code>ffuf -w LFI_payloads.txt -u example.com/file?id=FUZZ</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Sensitive File Discovery -->
-  <section id="sensitive" class="section alt">
-    <div class="section-header">
-      <h2>Sensitive File Discovery</h2>
-      <p>Locate robots, backups and exposed configuration files.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Robots.txt Analysis</h3>
-          <span class="chip">curl + grep</span>
-        </div>
-        <p>Extract disallowed paths and sitemaps.</p>
-        <pre><code>curl -s example.com/robots.txt | grep -E "Disallow:|Sitemap:"</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Common Backups</h3>
-          <span class="chip">ffuf</span>
-        </div>
-        <p>Bruteforce common backup filenames.</p>
-        <pre><code>ffuf -w wordlists/common_backups.txt -u example.com/FUZZ</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Hidden Parameter Discovery -->
-  <section id="hidden" class="section">
-    <div class="section-header">
-      <h2>Hidden Parameter Discovery</h2>
-      <p>Uncover hidden HTTP parameters for further fuzzing and logic testing.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Param Mining (Basic)</h3>
-          <span class="chip">Arjun</span>
-        </div>
-        <p>Automatically discover parameters for a given endpoint.</p>
-        <pre><code>Arjun -u example.com/index.php</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Guess Parameters</h3>
-          <span class="chip">ffuf</span>
-        </div>
-        <p>Guess parameters with a custom wordlist.</p>
-        <pre><code>ffuf -w wordlists/params.txt -u example.com/index.php?FUZZ=1</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Directory & File Bruteforcing -->
-  <section id="dir" class="section alt">
-    <div class="section-header">
-      <h2>Directory &amp; File Bruteforcing</h2>
-      <p>Enumerate hidden directories, files and interesting extensions.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Dir &amp; File Discovery</h3>
-          <span class="chip">gobuster</span>
-        </div>
-        <p>Bruteforce directories and files with wordlists.</p>
-        <pre><code>gobuster dir -u example.com -w /wordlists/dir.txt -t 50</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Extension Enumeration</h3>
-          <span class="chip">ffuf</span>
-        </div>
-        <p>Probe for alternate extensions of files.</p>
-        <pre><code>ffuf -w /wordlists/extensions.txt -u example.com/indexFUZZ</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- WordPress Security Testing -->
-  <section id="wp" class="section">
-    <div class="section-header">
-      <h2>WordPress Security Testing</h2>
-      <p>Enumerate versions, plugins and themes for vulnerable components.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>WP Version &amp; Info</h3>
-          <span class="chip">wpscan</span>
-        </div>
-        <p>Enumerate core version and vulnerabilities.</p>
-        <pre><code>wpscan --url example.com --enumerate vp</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Plugin &amp; Theme Scan</h3>
-          <span class="chip">wpscan</span>
-        </div>
-        <p>Scan for vulnerable plugins and themes.</p>
-        <pre><code>wpscan --url example.com --enumerate ap,at</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- CORS Testing -->
-  <section id="cors" class="section alt">
-    <div class="section-header">
-      <h2>CORS Testing</h2>
-      <p>Detect misconfigured Cross‑Origin Resource Sharing policies.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>CORS Misconfig Check</h3>
-          <span class="chip">nuclei</span>
-        </div>
-        <p>Bulk test URLs for CORS misconfigurations.</p>
-        <pre><code>cat urls.txt | nuclei -t cors-misconfig.yaml</code></pre>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>Manual Origin Fuzz</h3>
-          <span class="chip">curl</span>
-        </div>
-        <p>Send a crafted Origin header to probe CORS behaviour.</p>
-        <pre><code>curl -i -X GET "https://example.com" -H "Origin: evil.com"</code></pre>
-      </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Google Dork Queries -->
-  <section id="dorks" class="section">
-    <div class="section-header">
-      <h2>Google Dork Queries (site:example.com)</h2>
-      <p>Use these dorks to discover exposed assets, configs and intelligence around the target.</p>
-    </div>
-
-    <div class="grid grid-2">
-      <div class="card">
-        <h3>Discovery &amp; Exposure</h3>
-        <pre><code>site:example.com intitle:"index of"</code></pre>
-        <pre><code>site:example.com ext:env OR ext:conf OR ext:ini</code></pre>
-        <pre><code>site:example.com ext:sql OR ext:sqlite OR ext:db</code></pre>
-        <pre><code>site:example.com inurl:wp-admin OR inurl:wp-content</code></pre>
-        <pre><code>site:example.com ext:log OR ext:txt intext:password</code></pre>
-        <pre><code>site:example.com ext:bak OR ext:old OR ext:zip OR ext:tar.gz</code></pre>
-        <pre><code>site:example.com inurl:login OR inurl:admin OR inurl:dashboard</code></pre>
-        <pre><code>site:example.com intext:"sql syntax" OR intext:"mysql error"</code></pre>
-        <pre><code>site:example.com ext:pdf OR ext:docx OR ext:pptx</code></pre>
-        <pre><code>site:example.com inurl:phpinfo.php</code></pre>
-        <pre><code>site:example.com "c99.php" OR "r57.php"</code></pre>
-        <pre><code>site:example.com inurl:install OR inurl:setup</code></pre>
-      </div>
-
-      <div class="card">
-        <h3>External Intel &amp; OSINT</h3>
-        <pre><code>site:example.com inurl:url=http OR inurl:redir=http</code></pre>
-        <pre><code>site:example.com ext:action OR ext:do filetype:action</code></pre>
-        <pre><code>site:pastebin.com example.com</code></pre>
-        <pre><code>site:linkedin.com "employees" "example.com"</code></pre>
-        <pre><code>site:example.com inurl:.htaccess</code></pre>
-        <pre><code>site:*.example.com</code></pre>
-        <pre><code>site:*.*.example.com</code></pre>
-        <pre><code>site:web.archive.org/web/ example.com inurl:wp-admin</code></pre>
-        <pre><code>site:github.com example.com</code></pre>
-        <pre><code>site:openbugbounty.org example.com</code></pre>
-        <pre><code>site:reddit.com example.com</code></pre>
-        <pre><code>site:example.com inurl:crossdomain.xml</code></pre>
-        <pre><code>site:threatcrowd.org example.com</code></pre>
-        <pre><code>site:example.com ext:swf</code></pre>
-        <pre><code>site:crt.sh example.com</code></pre>
-        <pre><code>site:censys.io ip:example.com</code></pre>
-        <pre><code>site:shodan.io example.com</code></pre>
-      </div>
-    </div>
-
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <p>No limit how you dig but remember to boost your self</p>
-    <p>Kalyani-Satyam --: Advanced OneLinerRecon tool</p>
-  </footer>
 </body>
 </html>
-
